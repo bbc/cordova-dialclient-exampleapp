@@ -65,62 +65,62 @@ var terminals= [];
 
 var app = {
     // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-        // Bind Event Listeners
-        //
-        // Bind any events that are required on startup. Common events are:
-        // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-        // deviceready Event Handler
-        //
-        // The scope of 'this' is the event. In order to call the 'receivedEvent'
-        // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-        app.log("Discover HbbTV Terminals");
-        $("#terminals").html("Searching for HbbTV terminals:  please wait ...");
-        app.discoverTerminals();
-        
-        
-        
-    },
-        // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        
-        console.log('Received Event: ' + id);
-    },
+initialize: function() {
+    this.bindEvents();
+},
+    // Bind Event Listeners
+    //
+    // Bind any events that are required on startup. Common events are:
+    // 'load', 'deviceready', 'offline', and 'online'.
+bindEvents: function() {
+    document.addEventListener('deviceready', app.onDeviceReady, false);
+},
+    // deviceready Event Handler
+    //
+    // The scope of 'this' is the event. In order to call the 'receivedEvent'
+    // function, we must explicitly call 'app.receivedEvent(...);'
+onDeviceReady: function() {
+    app.receivedEvent('deviceready');
+    app.log("Discover HbbTV Terminals");
+    $("#terminals").html("Searching for HbbTV terminals:  please wait ...");
+    app.discoverTerminals();
+    
+    
+    
+},
+    // Update DOM on a Received Event
+receivedEvent: function(id) {
+    
+    console.log('Received Event: ' + id);
+},
     
     discoverTerminals : function () {
         dialclient = DIALClient && DIALClient.getDIALClient();
         dialclient.startDiscovery(function (discoveredTerminals) {
-                  app.log('object evt: %O', discoveredTerminals);
-                  terminals = discoveredTerminals;
-                  $("#terminals").empty();
-                  $(terminals).each(function (i,terminal) {
-                                        var channel = Math.random().toString(36).substring(2);
-                                        $("#terminals").append("<li id='"+i+"'>"+terminal.friendly_name+"  <button class='launch' data-index='"+i+"' data-channel='"+channel+"'>Launch</button>  <button class='connect' data-index='"+i+"' data-channel='"+channel+"'>Connect</button> <div class='log'></div></li>");
-                                        });
-                  if(terminals.length==0){
-                  $("#terminals").html("No HbbTV terminals found.");
-                  }
-                  else{
-                  $("button.launch").click(function () {
-                                           var index = $(this).attr("data-index");
-                                           var channel = $(this).attr("data-channel");
-                                           //                               launchHbbTVApp(index,channel);
-                                           });
-                  $("button.connect").click(function () {
-                                            var index = $(this).attr("data-index");
-                                            var channel = $(this).attr("data-channel");
-                                            connect(index,channel);
-                                            });
-                  }
-      app.log(terminals.length+" HbbTV terminals found");
-      });
+                                  app.log('object evt: %O', discoveredTerminals);
+                                  terminals = discoveredTerminals;
+                                  $("#terminals").empty();
+                                  $(terminals).each(function (i,terminal) {
+                                                    var channel = Math.random().toString(36).substring(2);
+                                                    $("#terminals").append("<li id='"+i+"'>"+terminal.friendly_name+"  <button class='launch' data-index='"+i+"' data-channel='"+channel+"'>Launch</button>  <button class='connect' data-index='"+i+"' data-channel='"+channel+"'>Connect</button> <div class='log'></div></li>");
+                                                    });
+                                  if(terminals.length==0){
+                                  $("#terminals").html("No HbbTV terminals found.");
+                                  }
+                                  else{
+                                  $("button.launch").click(function () {
+                                                           var index = $(this).attr("data-index");
+                                                           var channel = $(this).attr("data-channel");
+                                                           //                               launchHbbTVApp(index,channel);
+                                                           });
+                                  $("button.connect").click(function () {
+                                                            var index = $(this).attr("data-index");
+                                                            var channel = $(this).attr("data-channel");
+                                                            connect(index,channel);
+                                                            });
+                                  }
+                                  app.log(terminals.length+" HbbTV terminals found");
+                                  });
     },
     log : function (msg) {
         console.log(msg);

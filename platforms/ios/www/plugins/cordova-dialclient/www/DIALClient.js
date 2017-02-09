@@ -1,7 +1,10 @@
-cordova.define("cordova-dialclient.DIALClient", function(require, exports, module) { var exec = require('cordova/exec');
-
+cordova.define("cordova-dialclient.DIALClient", function(require, exports, module) {
+var exec = require('cordova/exec');
 var terminalCounter = 1;
 var discoveredTerminals = {};
+
+
+// var adder = new Adder();
 
 /**
  * A Device object shall have the following properties:
@@ -43,6 +46,8 @@ var DiscoveredTerminal = function(enum_id, friendly_name, X_HbbTV_App2AppURL, X_
  * @constructor
  */
 var dialClient = function(){
+
+
     Object.defineProperty(this, "startDiscovery", {
         get: function () {
             return startDiscovery;
@@ -70,25 +75,27 @@ var dialClient = function(){
 var startDiscovery = function(onDeviceListChanged){
 
 
-    var success = function (deviceList) {
+
+    var success = function (deviceListJSON) {
                
-        var devices = [];
-        var jsonData = JSON.parse(deviceList);
-//               console.log(jsonData);
+        
                
-        for(var i=0;i<jsonData.length; i++){
-            var terminal = jsonData[i];
-            var UDN = terminal.UDN;
-//               console.log(UDN);
-            var oldTerminal = discoveredTerminals[UDN];
+        var deviceList =  JSON && JSON.parse(deviceListJSON);
+               
+        console.log(deviceList);
+               
+        var res = [];
+        for(var i=0;i<deviceList.length; i++){
+            var terminal = deviceList[i];
+            var launchUrl = terminal.launchUrl;
+            var oldTerminal = discoveredTerminals[launchUrl];
             var enumId = oldTerminal && oldTerminal.enum_id || terminalCounter++;
-            var newTerminal = new DiscoveredTerminal(enumId, terminal.friendlyName, terminal.HbbTV_App2AppURL, terminal.HbbTV_InterDevSyncURL, terminal.HbbTV_UserAgent);
-            discoveredTerminals[UDN] = newTerminal;
+            var newTerminal = new DiscoveredTerminal(enumId, terminal.friendlyName, terminal.X_HbbTV_App2AppURL, terminal.X_HbbTV_InterDevSyncURL, terminal.X_HbbTV_UserAgent);
+            discoveredTerminals[launchUrl] = newTerminal;
             discoveredTerminals[enumId] = terminal;
-            devices.push(newTerminal);
+            res.push(newTerminal);
         }
-               
-        onDeviceListChanged && onDeviceListChanged.call(null,devices);
+        onDeviceListChanged && onDeviceListChanged.call(null,res);
     };
     var error = function (code) {
         var res = [];
@@ -117,7 +124,7 @@ var getDevices = function(){
 
   var success = function (deviceList)
   {
-    
+
   }
 
   exec(success, error, "DIALClient", "getDevices", []);
