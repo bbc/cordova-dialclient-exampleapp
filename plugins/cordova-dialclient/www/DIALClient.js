@@ -1,9 +1,10 @@
+cordova.define("cordova-dialclient.DIALClient", function(require, exports, module) {
 var exec = require('cordova/exec');
 var terminalCounter = 1;
 var discoveredTerminals = {};
 
 
-// var adder = new Adder();
+
 
 /**
  * A Device object shall have the following properties:
@@ -74,11 +75,15 @@ var dialClient = function(){
 var startDiscovery = function(onDeviceListChanged){
 
 
-    // var mysum = adder.add(2,3);
 
-    // console.log("my sum =" + mysum);
+    var success = function (deviceListJSON) {
 
-    var success = function (deviceList) {
+
+
+        var deviceList =  JSON && JSON.parse(deviceListJSON);
+
+        console.log(deviceList);
+
         var res = [];
         for(var i=0;i<deviceList.length; i++){
             var terminal = deviceList[i];
@@ -113,19 +118,40 @@ var stopDiscovery = function(){
 
 
 /**
- * Boolean stopDiscovery()
+ * getDevices()
  */
-var getDevices = function(){
+var getDevices = function(onDeviceListReceived){
 
-  var success = function (deviceList)
+  var success = function (deviceListJSON)
   {
+     var deviceList =  JSON && JSON.parse(deviceListJSON);
+       console.log(deviceList);
 
-  }
+       var res = [];
+       for(var i=0;i<deviceList.length; i++){
+           var terminal = deviceList[i];
+           var launchUrl = terminal.launchUrl;
+           var oldTerminal = discoveredTerminals[launchUrl];
+           var enumId = oldTerminal && oldTerminal.enum_id || terminalCounter++;
+           var newTerminal = new DiscoveredTerminal(enumId, terminal.friendlyName, terminal.X_HbbTV_App2AppURL, terminal.X_HbbTV_InterDevSyncURL, terminal.X_HbbTV_UserAgent);
+           discoveredTerminals[launchUrl] = newTerminal;
+           discoveredTerminals[enumId] = terminal;
+           res.push(newTerminal);
+       }
+       onDeviceListReceived && onDeviceListReceived.call(null,devicesJSON);
+  };
+
+
+   var error = function (code) {
+     var res = [];
+     onDeviceListReceived && onDeviceListReceived.call(null,res);
+   };
 
   exec(success, error, "DIALClient", "getDevices", []);
-    return true;
+  return true;
 };
 
 exports.getDIALClient = function(){
-    return new dialClient();
+  return new dialClient();
 };
+});
