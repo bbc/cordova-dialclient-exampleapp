@@ -6,6 +6,8 @@
 .DS_Store
 
 # build/packaging/dependencies
+platforms/
+plugins/
 build/
 dist/
 sdist/
