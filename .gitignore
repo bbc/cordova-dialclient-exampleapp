@@ -32,3 +32,7 @@ local.properties
 
 # Eclipse Core
 .project
+
+# Cordova build artefacts
+plugins/
+platforms/
